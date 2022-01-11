@@ -2,7 +2,7 @@
 The original codes were from Tomas and Ashley from Barbara group ETH and highly appreciate that they were willing to share.
 
 
-## Documentation of nf visium initially by Tomas. 
+## Documentation of nf visium initially by Tomas.
 
 IMPORTANT:
 in the kallisto_pipeline.nf file, there is a command for running spaceranger (you can Ctrl+F "spaceranger" to find it).
@@ -13,18 +13,18 @@ this will need to be changed to the folder now containing the "mock_fastq" folde
 
 Example of a command to quantify Visium data with the Axolotl transcriptome:
 
-nextflow run kallisto_pipeline.nf
---transcriptome /links/groups/treutlein/USERS/tomasgomes/gene_refs/axolotl/Amex_T_v47/cDNA_transcripts/AmexT_v47_artificial.fa
---transindex AmexT_v47_artificial.kalid
---t2g /links/groups/treutlein/USERS/tomasgomes/gene_refs/axolotl/Amex_T_v47/cDNA_transcripts/AmexT_v47_artificial_genenames_t2g.txt
---white /links/groups/treutlein/USERS/tomasgomes/gene_refs/other/visium-v1_whitelist_kallisto.txt --samplename "A1_limb"
---outdir /links/groups/treutlein/USERS/tomasgomes/data/axolotl/
---protocol visiumv1
---reads "/links/groups/treutlein/DATA/sequencing/20200821_P1288_ASHLEY_VISIUM_axolotl_visium_control_11dpa/raw/A1_Animal1_Control/*.fastq.gz"
---images "V19S23-109"
---imagear "A1"
---imagef "/links/groups/treutlein/DATA/sequencing/20200821_P1288_ASHLEY_VISIUM_axolotl_visium_control_11dpa/image/A1_large_image1.jpg"
---imageal "/links/groups/treutlein/DATA/sequencing/20200821_P1288_ASHLEY_VISIUM_axolotl_visium_control_11dpa/alignment_files/V19S23-109-A1.json"
+	nextflow run kallisto_pipeline.nf
+		--transcriptome /links/groups/treutlein/USERS/tomasgomes/gene_refs/axolotl/Amex_T_v47/cDNA_transcripts/AmexT_v47_artificial.fa
+		--transindex AmexT_v47_artificial.kalid
+		--t2g /links/groups/treutlein/USERS/tomasgomes/gene_refs/axolotl/Amex_T_v47/cDNA_transcripts/AmexT_v47_artificial_genenames_t2g.txt
+		--white /links/groups/treutlein/USERS/tomasgomes/gene_refs/other/visium-v1_whitelist_kallisto.txt --samplename "A1_limb"
+		--outdir /links/groups/treutlein/USERS/tomasgomes/data/axolotl/
+		--protocol visiumv1
+		--reads "/links/groups/treutlein/DATA/sequencing/20200821_P1288_ASHLEY_VISIUM_axolotl_visium_control_11dpa/raw/A1_Animal1_Control/*.fastq.gz"
+		--images "V19S23-109"
+		--imagear "A1"
+		--imagef "/links/groups/treutlein/DATA/sequencing/20200821_P1288_ASHLEY_VISIUM_axolotl_visium_control_11dpa/image/A1_large_image1.jpg"
+		--imageal "/links/groups/treutlein/DATA/sequencing/20200821_P1288_ASHLEY_VISIUM_axolotl_visium_control_11dpa/alignment_files/V19S23-109-A1.json"
 
 
 Command breakdown:
