@@ -124,6 +124,7 @@ process index {
     script:
     """
     kallisto index -i ${params.transindex} -k 31 --make-unique ${transcriptome_file}
+
     """
 }
 
