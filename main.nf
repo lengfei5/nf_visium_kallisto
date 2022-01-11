@@ -1,4 +1,4 @@
-#!~/bin/miniconda3/envs/nextflowenv/bin nextflow
+#!/usr/bin/env nextflow
 
 /*
  * Example command:
@@ -9,37 +9,13 @@
  */
 
 
-
-/*
- * Defines necessary parameters
- * reads is used for path for fastq files, but also for the batch file for plate-based data
- */
-params.samplename = false
-//params.samplename = "GER006_10x"
-params.outdir = "./"
-params.protocol = false
-//params.protocol = "10xv2"
-params.transcriptome = false
-//params.transcriptome = "/links/groups/treutlein/USERS/tomasgomes/gene_refs/axolotl/Amex_T_v47/cDNA_transcripts/AmexT_v47_artificial.fa"
-params.transindex = false
-//params.transindex = "AmexT_v47_artificial.kalid"
-params.reads = false
-//params.reads = "/links/groups/treutlein/USERS/tomasgomes/projects/axolotl/data/raw/Gerber_all10x/GER006_10x/*.fastq.gz"
-params.white = false
-//params.white = "/links/groups/treutlein/USERS/tomasgomes/gene_refs/other/10xv2_whitelist.txt"
-params.t2g = false
-//params.t2g = "/links/groups/treutlein/USERS/tomasgomes/gene_refs/axolotl/Amex_T_v47/cDNA_transcripts/AmexT_v47_artificial_genenames_t2g.txt"
-params.imageal = false
-params.imagef = false
-
-
-
 /*
  * Input parameters validation and preparation
  */
 //----- TRANSCRIPTOME -----//
 //if(!params.transindex) exit 1, "Transcriptome index file path is mandatory (will be created if it does not exist)."
 transindex_file = file(params.transindex)
+
 if(!transindex_file.exists() and params.transcriptome!="") transcriptome_file = file(params.transcriptome)
 else exit 1, "Missing transcriptome file or transcriptome index file."
 
@@ -67,6 +43,7 @@ if(params.protocol=='plate'){
     Channel.fromPath(params.reads)
         .set{batch_kal}
 } else{ batch_kal = "" }
+
 
 //----- OTHER FILES -----//
 if(!params.samplename) exit 1, "Please provide a name for this sample"
@@ -103,6 +80,7 @@ process starting{
     script:
     """
     echo Pseudoalignment doesn't work as a first step, so we'll have this here.
+
     """
 }
 
@@ -238,6 +216,7 @@ process umicounts {
     script:
     """
     bustools text -o ${outbus}/umicount.txt ${outbus}/output.cor.sort.bus
+
     """
 }
 
@@ -261,6 +240,7 @@ process countbus {
     script:
     """
     bustools count --em -t ${outbus}/transcripts.txt -e ${outbus}/matrix.ec -g $t2g --genecounts -o ${outbus}/genecounts ${outbus}/output.cor.sort.bus
+
     """
 }
 
@@ -424,7 +404,16 @@ process getTissue {
 
     script:
     """
-    spaceranger count --id=mock --fastqs=/links/groups/treutlein/USERS/tomasgomes/gene_refs/human/refdata-gex-GRCh38-2020-A/mock_fastq --transcriptome=/links/groups/treutlein/USERS/tomasgomes/gene_refs/human/refdata-gex-GRCh38-2020-A --image=${params.imagef} --slide=${params.images} --area=${params.imagear} --loupe-alignment=${params.imageal} --localcores=4
+    spaceranger count
+      --id=mock
+      --fastqs=/links/groups/treutlein/USERS/tomasgomes/gene_refs/human/refdata-gex-GRCh38-2020-A/mock_fastq
+      --transcriptome=/links/groups/treutlein/USERS/tomasgomes/gene_refs/human/refdata-gex-GRCh38-2020-A
+      --image=${params.imagef}
+      --slide=${params.images}
+      --area=${params.imagear}
+      --loupe-alignment=${params.imageal}
+      --localcores=4
+
     """
 
 }
