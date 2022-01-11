@@ -195,6 +195,7 @@ process corrsort {
     """
     bustools correct -w $white -o ${outbus}/output.cor.bus ${outbus}/output.bus
     bustools sort -o ${outbus}/output.cor.sort.bus -t 8 ${outbus}/output.cor.bus
+
     """
 }
 
