@@ -161,7 +161,7 @@ process pseudoalPlate {
  */
 process pseudoal {
 
-    publishDir "${params.outdir}/kallisto", mode: 'copy'
+    //publishDir "${params.outdir}/kallisto", mode: 'copy'
     storeDir params.outdir
 
     input:
@@ -247,6 +247,7 @@ process umicounts {
 
     script:
     """
+    ml load bustools/0.40.0-foss-2018b
     bustools text -o ${outbus}/umicount.txt ${outbus}/output.cor.sort.bus
 
     """
@@ -271,10 +272,49 @@ process countbus {
 
     script:
     """
+    ml load bustools/0.40.0-foss-2018b
     bustools count --em -t ${outbus}/transcripts.txt -e ${outbus}/matrix.ec -g $t2g --genecounts -o ${outbus}/genecounts ${outbus}/output.cor.sort.bus
 
     """
 }
+
+/*
+ * Step Tiss. Get tissue alignment and fiducials
+ */
+process getTissue {
+    storeDir "${params.outdir}/${params.samplename}"
+
+    //input:
+    //file imageal from file(params.imageal)
+    //file imagef from file(params.imagef)
+
+    output:
+    file "mock/outs/spatial/aligned_fiducials.jpg"
+    file "mock/outs/spatial/scalefactors_json.json"
+    file "mock/outs/spatial/tissue_lowres_image.png"
+    file "mock/outs/spatial/detected_tissue_image.jpg"
+    file "mock/outs/spatial/tissue_hires_image.png"
+    file "mock/outs/spatial/tissue_positions_list.csv"
+
+    when: params.protocol=='visiumv1'
+
+    script:
+    """
+    ml load spaceranger/1.3.0-gcccore-7.3.0
+    spaceranger count \
+      --id=mock \
+      --fastqs=${params.mock} \
+      --transcriptome=${params.refhs} \
+      --image=${params.imagef} \
+      --slide=${params.images} \
+      --area=${params.imagear} \
+      --loupe-alignment=${params.imageal} \
+      --localcores=6
+
+    """
+
+}
+
 
 /*
  * Step 5. Make Seurat object for plate
@@ -410,42 +450,6 @@ process makeSeurat10x {
                                 features = mtgenes)
 
     saveRDS(srat, file = "${params.samplename}_srat.RDS")
-    """
-
-}
-
-/*
- * Step Tiss. Get tissue alignment and fiducials
- */
-process getTissue {
-    storeDir "${params.outdir}/${params.samplename}"
-
-    //input:
-    //file imageal from file(params.imageal)
-    //file imagef from file(params.imagef)
-
-    output:
-    file "mock/outs/spatial/aligned_fiducials.jpg"
-    file "mock/outs/spatial/scalefactors_json.json"
-    file "mock/outs/spatial/tissue_lowres_image.png"
-    file "mock/outs/spatial/detected_tissue_image.jpg"
-    file "mock/outs/spatial/tissue_hires_image.png"
-    file "mock/outs/spatial/tissue_positions_list.csv"
-
-    when: params.protocol=='visiumv1'
-
-    script:
-    """
-    ml load spaceranger/1.3.0-gcccore-7.3.0
-    spaceranger count \
-      --id=mock \
-      --fastqs=${params.mock} \
-      --transcriptome=${params.refhs} \
-      --image=${params.imagef} \
-      --slide=${params.images} \
-      --area=${params.imagear} \
-      --loupe-alignment=${params.imageal} \
-      --localcores=6
 
     """
 
@@ -533,6 +537,7 @@ process makeSeuratVisium {
                                 features = mtgenes)
 
     saveRDS(srat, file = "${params.samplename}_srat.RDS")
+
     """
 
 }
