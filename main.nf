@@ -515,7 +515,7 @@ process makeSeuratVisium {
          xlab = "More than xx UMI", main = "${params.samplename}")
     dev.off()
 
-    # create Seurat object
+    # create Seurat object and add image information
     srat <- CreateSeuratObject(counts = count.data, assay = "Spatial") # create object
     image <- Read10X_Image(image.dir = paste0(topdir, "/mock/outs/spatial/"),
                            filter.matrix = FALSE) # read in the images
