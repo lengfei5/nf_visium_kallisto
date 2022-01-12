@@ -8,6 +8,27 @@
  * nextflow run kallisto_pipeline.nf --transcriptome /links/groups/treutlein/USERS/tomasgomes/gene_refs/axolotl/Amex_T_v47/cDNA_transcripts/AmexT_v47_artificial.fa --transindex AmexT_v47_artificial.kalid --t2g /links/groups/treutlein/USERS/tomasgomes/gene_refs/axolotl/Amex_T_v47/cDNA_transcripts/AmexT_v47_artificial_genenames_t2g.txt --samplename "Gerber_plate" --outdir /links/groups/treutlein/USERS/tomasgomes/data/axolotl/ --protocol plate --reads /links/groups/treutlein/USERS/tomasgomes/projects/axolotl/data/raw/Gerber_allcells/kallisto_batch.txt
  */
 
+ log.info """\
+          =============================
+          Pipeline - process axolotl visium
+          =============================
+          transcriptome: ${params.transcriptome}
+          transcriptome_index: ${params.transindex}
+          whitelist: ${params.white}
+          t2g: ${params.t2g}
+          samplename: ${params.samplename}
+          outdir: ${params.outdir}
+          protocol: ${params.protocol}
+          reads: ${params.reads}
+          image_serialnumber: ${params.images}
+          image: ${params.imagef}
+          image_area: ${params.imagear}
+          image_alignment: ${params.imageal}
+
+
+          """
+          .stripIndent()
+
 
 /*
  * Input parameters validation and preparation
@@ -27,6 +48,7 @@ R1files = Channel
     .toSortedList()
     .flatten()
     //.view()
+
 R2files = Channel
     .from(params.reads.tokenize())
     .flatMap{ files(it) }
@@ -34,11 +56,13 @@ R2files = Channel
     .toSortedList()
     .flatten()
     //.view()
+
 R1files
     .merge(R2files){ a, b -> tuple(a,b) }
     .flatten()
-    //.view()
+    .view()
     .set{read_files_kallisto}
+
 if(params.protocol=='plate'){
     Channel.fromPath(params.reads)
         .set{batch_kal}
@@ -123,10 +147,12 @@ process pseudoalPlate {
 
     script:
     """
+    ml load kallisto/0.46.0-foss-2018b
     kallisto pseudo -t 16 --quant \\
         -i $index \\
         -o ${params.samplename} \\
         -b $batchkal
+
     """
 }
 
@@ -135,7 +161,7 @@ process pseudoalPlate {
  */
 process pseudoal {
 
-    //publishDir params.outdir, mode: 'copy'
+    publishDir "${params.outdir}/kallisto", mode: 'copy'
     storeDir params.outdir
 
     input:
@@ -153,21 +179,25 @@ process pseudoal {
     script:
     if(params.protocol=='visiumv1')
         """
+        ml load kallisto/0.46.0-foss-2018b
         kallisto bus \\
             -i $index \\
             -o ${params.samplename} \\
             -x 0,0,16:0,16,28:1,0,0 \\
-            -t 10 \\
+            -t 12 \\
             $reads
+
         """
     else
         """
+        ml load kallisto/0.46.0-foss-2018b
         kallisto bus \\
             -i $index \\
             -o ${params.samplename} \\
             -x ${params.protocol} \\
-            -t 10 \\
+            -t 12 \\
             $reads
+
         """
 }
 
@@ -193,6 +223,7 @@ process corrsort {
 
     script:
     """
+    ml load bustools/0.40.0-foss-2018b
     bustools correct -w $white -o ${outbus}/output.cor.bus ${outbus}/output.bus
     bustools sort -o ${outbus}/output.cor.sort.bus -t 8 ${outbus}/output.cor.bus
 
@@ -405,15 +436,16 @@ process getTissue {
 
     script:
     """
-    spaceranger count
-      --id=mock
-      --fastqs=/links/groups/treutlein/USERS/tomasgomes/gene_refs/human/refdata-gex-GRCh38-2020-A/mock_fastq
-      --transcriptome=/links/groups/treutlein/USERS/tomasgomes/gene_refs/human/refdata-gex-GRCh38-2020-A
-      --image=${params.imagef}
-      --slide=${params.images}
-      --area=${params.imagear}
-      --loupe-alignment=${params.imageal}
-      --localcores=4
+    ml load spaceranger/1.3.0-gcccore-7.3.0
+    spaceranger count \
+      --id=mock \
+      --fastqs=${params.mock} \
+      --transcriptome=${params.refhs} \
+      --image=${params.imagef} \
+      --slide=${params.images} \
+      --area=${params.imagear} \
+      --loupe-alignment=${params.imageal} \
+      --localcores=6
 
     """
 

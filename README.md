@@ -5,6 +5,7 @@ The original codes were from Tomas and Ashley from Barbara group ETH and highly 
 ## Documentation of nf visium initially by Tomas.
 
 IMPORTANT:
+
 in the kallisto_pipeline.nf file, there is a command for running spaceranger (you can Ctrl+F "spaceranger" to find it).
 you will need to edit the path for the mock fastq reads to include where you're saving those that I'm sending.
 For example the current path there is
@@ -17,7 +18,8 @@ Example of a command to quantify Visium data with the Axolotl transcriptome:
 		--transcriptome /links/groups/treutlein/USERS/tomasgomes/gene_refs/axolotl/Amex_T_v47/cDNA_transcripts/AmexT_v47_artificial.fa
 		--transindex AmexT_v47_artificial.kalid
 		--t2g /links/groups/treutlein/USERS/tomasgomes/gene_refs/axolotl/Amex_T_v47/cDNA_transcripts/AmexT_v47_artificial_genenames_t2g.txt
-		--white /links/groups/treutlein/USERS/tomasgomes/gene_refs/other/visium-v1_whitelist_kallisto.txt --samplename "A1_limb"
+		--white /links/groups/treutlein/USERS/tomasgomes/gene_refs/other/visium-v1_whitelist_kallisto.txt
+		--samplename "A1_limb"
 		--outdir /links/groups/treutlein/USERS/tomasgomes/data/axolotl/
 		--protocol visiumv1
 		--reads "/links/groups/treutlein/DATA/sequencing/20200821_P1288_ASHLEY_VISIUM_axolotl_visium_control_11dpa/raw/A1_Animal1_Control/*.fastq.gz"
