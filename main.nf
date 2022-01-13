@@ -479,7 +479,7 @@ process makeSeuratVisium {
     ml load r/3.6.2-foss-2018b
     cp $baseDir/scripts/make_SeuratObj_Visium.R ./make_SeuratObj_Visium.R
     Rscript make_SeuratObj_Visium.R
-    
+
     """
 
 }
