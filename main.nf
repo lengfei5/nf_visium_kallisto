@@ -468,21 +468,23 @@ process makeSeuratVisium {
     file umic from kallisto_umic.collect()
 
     output:
-    file "${params.samplename}_UMIrank.pdf"
-    file "${params.samplename}_UMIduplication.pdf"
-    file "${params.samplename}_srat.RDS"
+    file "UMIrank.pdf"
+    file "UMIduplication.pdf"
+    file "srat.RDS"
 
     when: params.protocol=='visiumv1'
 
     script:
     """
     ml load r/3.6.2-foss-2018b
+    cp -r ${outbus}/mock ${outbus}/genecounts.mtx ${outbus}/genecounts.genes.txt ${outbus}/genecounts.barcodes.txt .
     cp $baseDir/scripts/make_SeuratObj_Visium.R ./make_SeuratObj_Visium.R
     Rscript make_SeuratObj_Visium.R
 
     """
 
 }
+
 
 workflow.onComplete {
     println "Pipeline completed at : $workflow.complete"

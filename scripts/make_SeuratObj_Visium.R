@@ -2,7 +2,7 @@
 ##########################################################################
 # Project: axolotl visium analysis
 # Script purpose: make Seurat object for visium data and make loope file for 10x software
-# Usage example: 
+# Usage example:
 # Author: Jingkui Wang (jingkui.wang@imp.ac.at)
 # Date of creation: Thu Jan 13 11:24:44 2022
 ##########################################################################
@@ -11,13 +11,13 @@ library(Seurat)
 library(DropletUtils)
 library(edgeR)
 ##########################################
-# missed function in DropletUtils 
+# missed function in DropletUtils
 ##########################################
 estimateAmbience <- function(m, lower=100, by.rank=NULL, round=TRUE, good.turing=TRUE) {
   m <- .rounded_to_integer(m, round)
   totals <- .intColSums(m)
   lower <- .get_lower(totals, lower, by.rank=by.rank)
-  
+
   if (good.turing) {
     a <- .compute_ambient_stats(m, totals, lower=lower)
     output <- numeric(nrow(m))
@@ -27,7 +27,7 @@ estimateAmbience <- function(m, lower=100, by.rank=NULL, round=TRUE, good.turing
     ambient <- totals <= lower
     output <- rowSums(m[,ambient,drop=FALSE])
   }
-  
+
   output
 }
 
@@ -36,7 +36,7 @@ estimateAmbience <- function(m, lower=100, by.rank=NULL, round=TRUE, good.turing
     cs <- colSums(m)
     rs <- rowSums(m)
     if (!isTRUE(all.equal(cs, round(cs))) ||
-        !isTRUE(all.equal(rs, round(rs)))) 
+        !isTRUE(all.equal(rs, round(rs))))
     {
       m <- round(m)
     }
@@ -56,17 +56,17 @@ estimateAmbience <- function(m, lower=100, by.rank=NULL, round=TRUE, good.turing
   if (any(discard)) {
     m <- m[!discard,,drop=FALSE]
   }
-  
+
   # Computing the average profile from the ambient cells.
   ambient <- totals <= lower # lower => "T" in the text.
   ambient.m <- m[,ambient,drop=FALSE]
   ambient.prof <- rowSums(ambient.m)
-  
+
   if (sum(ambient.prof)==0) {
     stop("no counts available to estimate the ambient profile")
   }
   ambient.prop <- .safe_good_turing(ambient.prof)
-  
+
   list(
     m=m, # this MUST have the same number of columns as input.
     discard=discard,
@@ -89,14 +89,14 @@ estimateAmbience <- function(m, lower=100, by.rank=NULL, round=TRUE, good.turing
 #' @importFrom edgeR goodTuringProportions
 .safe_good_turing <- function(ambient.prof) {
   ambient.prob <- goodTuringProportions(ambient.prof)
-  
+
   still.zero <- ambient.prob<=0
   if (any(still.zero)) {
     pseudo.prob <- 1/sum(ambient.prof)
     ambient.prob[still.zero] <- pseudo.prob/sum(still.zero)
     ambient.prob[!still.zero] <- ambient.prob[!still.zero] * (1 - pseudo.prob)
   }
-  
+
   ambient.prob
 }
 
@@ -113,9 +113,10 @@ count.data = Matrix::t(exp)
 # plot rankings for number of UMI
 br.out <- barcodeRanks(count.data)
 
-pdf("plot_UMIrank.pdf", height = 5, width = 5, useDingbats = F)
+pdf("UMIrank.pdf", height = 5, width = 5, useDingbats = F)
 
 plot(br.out$rank, br.out$total, log="xy", xlab="Rank", ylab="Total")
+
 o <- order(br.out$rank)
 lines(br.out$rank[o], br.out$fitted[o], col="red")
 abline(h=metadata(br.out)$knee, col="dodgerblue", lty=2)
@@ -131,11 +132,11 @@ umi = read.table(paste0(topdir, "umicount.txt"), sep = "\t", header = F, strings
 sumUMI = c()
 sumi = sum(umi$V4)
 
-for(i in 0:250){ 
-  sumUMI = c(sumUMI, sum(umi$V4[umi$V4>i])/sumi) 
+for(i in 0:250){
+  sumUMI = c(sumUMI, sum(umi$V4[umi$V4>i])/sumi)
 }
 
-pdf("plot_UMIduplication.pdf", height = 3.5, width = 7, useDingbats = F)
+pdf("UMIduplication.pdf", height = 3.5, width = 7, useDingbats = F)
 
 par(mfrow = c(1,2))
 
@@ -169,5 +170,6 @@ srat@assays$Spatial@meta.features = data.frame(row.names = rownames(srat@assays$
 # mtgenes = mtgenes[mtgenes %in% g[,1]]
 # srat = PercentageFeatureSet(srat, col.name = "percent.mt", assay = "Spatial",
 #                             features = mtgenes)
+saveRDS(srat, file = "srat.RDS")
 
-saveRDS(srat, file = "${params.samplename}_srat.RDS")
+
