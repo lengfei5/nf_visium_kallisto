@@ -170,6 +170,5 @@ srat@assays$Spatial@meta.features = data.frame(row.names = rownames(srat@assays$
 # mtgenes = mtgenes[mtgenes %in% g[,1]]
 # srat = PercentageFeatureSet(srat, col.name = "percent.mt", assay = "Spatial",
 #                             features = mtgenes)
+
 saveRDS(srat, file = "srat.RDS")
-
-

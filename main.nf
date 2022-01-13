@@ -455,7 +455,6 @@ process makeSeurat10x {
 
 }
 
-
 /*
  * Step 5. Make Seurat object for Visium v1
  */
