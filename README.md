@@ -77,3 +77,24 @@ nextflow run kallisto_pipeline.nf
 	# Alignment file produced by the manual Loupe alignment step
 	# this is something that Ashley did (manually aligning the images and the spots in Loupe), if you need help you can ask her
 	--imageal "/links/groups/treutlein/DATA/sequencing/20200821_P1288_ASHLEY_VISIUM_axolotl_visium_control_11dpa/alignment_files/V19S23-109-A1.json"
+
+
+# my own questions:
+- general
+	- this is not only a nf pipeline for visium, but also for plate-based or 10x scRNA-seq, but all kallisto-based ?
+
+- input of pipeline
+	- whitelist input is only one column of barcode ?
+	- protocol visiumv1 ?
+	- imageal ?
+
+- output of pipeline
+	- genecounts.barcodes.txt is UMI count right ?
+	- UMI rank was plotted, but filter was not done (not for visium)?
+	- umi duplication plots, what do two plots mean ? and also the four columns of umicount.txt
+	- estimateAmbience ? (control the cross-contamination from the environment)
+
+- analysis UMI counts from kallisto (similar to other count table ?)
+	- SCT transform (Tomas uses SCT and Ashely scaling factor-based)
+	- cell type deconvolution (tey use cell2locate)
+	-
